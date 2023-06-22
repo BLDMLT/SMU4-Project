@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {packages:["orgchart"]});
+      google.script.run.withSuccessHandler(drawChart)
+          .dataZoom();
+
+      function drawChart(data) {
+        var graphy = new google.visualization.DataTable();
+        graphy.addColumn('string', 'Name');
+        graphy.addColumn('string', 'Manager');
+        graphy.addColumn('string', 'ToolTip');
+        for(var i = 0; i < data.length; i++){
+          var tooltips = 'Preferred Name:'+data[i][1] + '\rAddress:'+data[i][3];
+          graphy.addRows([
+          [{'v':data[i][0], 'f':data[i][0]+'<div style="color:black; font-style:italic">'+data[i][2]+'</div style="color:red; font-style:italic> '}, data[i][4],tooltips]
+          ]);
+        }
+        // Create the chart.
+        var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+        // Draw the chart, setting the allowHtml option to true for the tooltips.
+        chart.draw(graphy, {'allowHtml':true});
+      }
+   </script>
+    </head>
+  <body>
+    <div id="chart_div"></div>
+  </body>
+</html>

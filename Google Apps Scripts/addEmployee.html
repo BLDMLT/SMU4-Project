@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    
+    <!-- STYLING FROM MATERIALIZE-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- STYLING FROM MATERIALIZE-->
+    
+    <style>
+      .form-row  /*Give whatever name you want, this is for styling*/
+      {
+        margin-bottom: 15px;
+      }
+    </style>
+    
+  </head>
+  <body>
+  
+    
+    
+    <div class = "container">
+    
+      <div class="row">
+        <h1>New Employee</h1> <!-- HEADINGS -->
+      </div> <!-- CLOSE ROW -->
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="first_name" type="text" class="validate">
+          <label for="first_name">First Name</label>
+        </div>
+        <div class="input-field col s6">
+          <input id="last_name" type="text" class="validate">
+          <label for="last_name">Last Name</label>
+        </div>
+      </div> <!-- CLOSE ROW -->
+      
+      <div class="row">
+        <div class="input-field col s6">
+          <select id = "position">
+            <option disabled selected>Choose your Position</option>
+            <option>Technical services</option>
+            <option>Sales/marketting</option>
+            <option>Admin/finance</option>
+            <option>PointStudio</option>
+            <option>Sentry</option>
+            <option>Eureka</option>
+            <option>Vulcan</option>
+            <option>BlastLogic</option>
+            <option>Evolution</option>
+            <option>MaterialMRT</option>
+            <option>Data and SDK</option>
+            <option>Workbench</option>
+            <option>UIX</option>
+            <option>Hardware</option>
+            <option>Hardware integration</option>
+            <option>Dev ops</option>
+          </select>
+          <label>Position</label>
+        </div>
+        <div class="input-field col s6">
+          <label>Age</label><input type = "text" id = "age">
+        </div>
+      </div> <!-- CLOSE ROW -->
+      
+      <div class="row">
+        <button id = "button" class="btn waves-effect waves-light" type="submit" name="action">Submit
+          <i class="material-icons right">send</i>
+        </button>
+      </div> <!-- CLOSE ROW -->
+      
+      
+      
+  
+      
+    </div> <!-- CLOSE CONTAINER -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> <!-- NEED TO COMPILE THIS SO WE CAN USE THE STYLING FROM MATERIALIZE -->
+    <script>
+    
+      /*NEED THIS FUNCTION BELOW TO ACCESS THE DROPDOWN FUNCTION STYLE FROM MATERIALIZE*/
+      document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems);
+      });
+ 
+      document.getElementById("button").addEventListener("click",doAddEmployeeYenYou); /*Whenever the button is click, do addEmployeeYenYou*/ 
+      function doAddEmployeeYenYou() 
+      {
+        var employeeInfo = {};  /*Create an object to store all the variables*/
+        
+        employeeInfo.firstName = document.getElementById("first_name").value; /*Save the name into the object*/
+        employeeInfo.lastName = document.getElementById("last_name").value;
+        employeeInfo.age = document.getElementById("age").value;
+        employeeInfo.position = document.getElementById("position").value;
+        
+        google.script.run.addEmployeeYenYou(employeeInfo);
+        document.getElementById("first_name").value = ""; /*Clear the input after enter it*/
+        document.getElementById("last_name").value = "";
+        document.getElementById("age").value = "";
+        
+        var myApp = document.getElementById("position");
+        myApp.selectedIndex = 0;
+        M.FormSelect.init(myApp); /*Clear the input after enter it*/
+        
+      }
+      
+    </script> <!-- CLOSE SCRIPT -->
+    
+  </body>
+</html>

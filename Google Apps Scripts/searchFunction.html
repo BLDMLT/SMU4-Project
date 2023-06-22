@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    
+    <!-- STYLING FROM MATERIALIZE-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- STYLING FROM MATERIALIZE-->
+    
+    <style>
+      .form-row  /*Give whatever name you want, this is for styling*/
+      {
+        margin-bottom: 15px;
+      }
+    </style>
+    
+  </head>
+  <body>
+  
+    
+    
+    <div class = "container">
+    
+      <div class="row">
+        <h1>Search Employee</h1> <!-- HEADINGS -->
+      </div> <!-- CLOSE ROW -->
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="name" type="text" class="validate">
+          <label for="name">Name</label>
+        </div>
+        <div class="input-field col s6">
+          <input disabled id ="position" type="text" class="validate">
+          <label for="position">Position</label>
+        </div>
+      </div> <!-- CLOSE ROW -->
+  
+    </div> <!-- CLOSE CONTAINER -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> <!-- NEED TO COMPILE THIS SO WE CAN USE THE STYLING FROM MATERIALIZE -->
+    <script>
+    
+      /*NEED THIS FUNCTION BELOW TO ACCESS THE DROPDOWN FUNCTION STYLE FROM MATERIALIZE*/
+      document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems);
+      });
+ 
+      document.getElementById("name").addEventListener("input",getPosition); /*Whenever the name is input, do getPosition*/ 
+      
+      function getPosition() 
+      {
+        var nameID = document.getElementById("name").value;
+        
+        if(nameID.length >= 3)
+        {
+          google.script.run.withSuccessHandler(updatePosition).getPosition(nameID);
+
+        }
+      }
+      
+      function updatePosition(job)
+      {
+          document.getElementById("position").value = job;
+          M.updateTextFields();
+      }
+      
+    </script> <!-- CLOSE SCRIPT -->
+    
+  </body>
+</html>

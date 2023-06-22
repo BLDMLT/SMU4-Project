@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <input id="search" type="text" name="search" > 
+    <input name="search" type="submit" value="Search" onclick="searchChart()" draggable="true" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <p> <input name="show" type="submit" value="Whole graph" onclick="showAll()">
+    <select id="allOption" onchange= "updateOption()"></select> <select id="team" onclick="teamChart()"></select></p>
+    <p id="demo"></p>
+    <div id="chart_div" draggable="true" ondragstart="drag(event)" ondrop="drop(event)"></div>
+   
+    <script>
+      var chart;
+      var globalData;
+      var currentData;
+      google.charts.load('current', {packages:["orgchart"]});
+      google.script.run.withSuccessHandler(allOption).dataZoom();
+      google.script.run.withSuccessHandler(teamSelect).dataZoom();
+      google.script.run.withSuccessHandler(drawChart).dataZoom();
+      
+      // Show the chart of all data
+      function showAll(){
+        currentData = globalData;
+        drawChart(globalData);
+      }
+      
+      // base on all titles select option
+      // decide the content of sub select option
+      function updateOption(){
+         var x = document.getElementById("team");
+         var sum =  x.length;
+         for(var i = 0; i < sum; i++){
+            x.remove(0);
+         }
+         var currentName = document.getElementById("allOption").value;
+         var index ;
+         for(var i = 0; i < globalData[0].length; i++){
+            if(globalData[0][i] == currentName){
+               index = i;
+            }
+         }
+         var select = [];
+         var num = 0;
+         for(var i=1;i<globalData.length;i++){
+           var option = document.createElement("option");
+           if(globalData[i][index] != ''){
+             var check = true;
+               for(var j = 0; j < num; j++){
+                 if(select[j] == globalData[i][index]){
+                   check = false;
+                  }
+                }            
+             if(check){
+               option.text = globalData[i][index];
+               option.value = globalData[i][index];
+               select[num] = globalData[i][index];
+               num++;
+               document.getElementById("team").add(option);
+             }  
+           }
+         }
+         teamChart();
+      }
+     
+     
+     // Create select options for all titles 
+      function allOption(data){
+         globalData = data;
+         currentData = data;
+         for(var i = 0; i < data[0].length; i++){
+            var option = document.createElement("option");
+            if(data[0][i] != ''){
+               option.text = data[0][i];
+               option.value = data[0][i];
+               document.getElementById("allOption").add(option);
+            }
+         }
+      }
+
+      // base on the selected option, create the chart
+      function teamChart(){
+         var teamName = document.getElementById("team").value;
+         var currentTeam = [];
+         currentTeam[0] = [];
+         var currentName = document.getElementById("allOption").value;
+         var index = 1;
+         var num ;
+         for(var j = 0; j < globalData[0].length; j++){
+            currentTeam[0][j] = globalData[0][j];
+            if(globalData[0][j] == currentName){
+               num = j;
+            }
+         }
+         for(var i = 1; i < globalData.length; i++){
+           if(globalData[i][num] == teamName){
+             currentTeam[index] = [];
+             for(var j = 0; j < globalData[i].length; j++){
+               currentTeam[index][j] = globalData[i][j];
+              }
+              index++;
+            }
+         }
+         currentData = currentTeam;
+         drawChart(currentTeam);
+      }
+      
+      // base on the data get from sheet create selete options
+      // without duplicate team name
+      function  teamSelect(data){
+         var select = [];
+         var num = 0;
+         for(var i=1;i<data.length;i++){
+           var option = document.createElement("option");
+           if(data[i][0] != ''){
+             var check = true;
+             for(var j = 0; j < num; j++){
+                if(select[j] == data[i][0]){
+                  check = false;
+                }
+             }
+             if(check){
+               option.text = data[i][0];
+               option.value = data[i][0];
+               select[num] = data[i][0];
+               num++;
+               document.getElementById("team").add(option);
+             }  
+           }
+         }
+      }
+      
+      // base on data(all) create the chart
+      function drawChart(data) {
+        var graphy = new google.visualization.DataTable();
+        graphy.addColumn('string', 'Name');
+        graphy.addColumn('string', 'Manager');
+        graphy.addColumn('string', 'ToolTip');
+        var array = []
+        for(var i = 1; i < data.length; i++){
+          var tooltips = '';
+          for(var j = 5; j < data[i].length; j++){
+            if(data[0][j] != '' && data[i][j] != undefined){
+              tooltips = tooltips + data[0][j] + ': ' + data[i][j] + '\n';
+            }
+          }
+          array[i-1] = [{'v':data[i][3], 'f':data[i][3]+'<div style="color:red; font-style:italic">'+data[i][4]+'</div>'} ,data[i][5],tooltips];
+        }
+        graphy.addRows(array);
+        // Create the chart.
+        chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+        // Draw the chart, setting the allowHtml option to true for the tooltips.
+        chart.draw(graphy, {'allowHtml':true});
+      }
+      
+      // Search the key whether included in data
+      // if so, make it as seleted
+      function searchChart(){
+        var selectedArray = new Array();
+        var counter = 0;
+        var target = document.getElementById('search').value;
+        for(var i = 1; i < currentData.length;i++) {
+          for(var j = 0; j < currentData[i].length; j++){
+            // not include superior data
+            if(j == 5){
+              continue;
+            }
+            var include = currentData[i][j].includes(target);
+            if(include)
+               selectedArray[counter++] = {row:i-1,column:null};
+          }
+        }
+        chart.setSelection(selectedArray);
+      }
+   </script>
+  </body>
+</html>
